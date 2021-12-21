@@ -162,3 +162,10 @@ git merge origin
 git branch -a
 
 git pull                pulls down commits and attempts to automatically merge
+
+## Referneces
+git checkout HEAD^          first parent of HEAD
+git checkout HEAD^^         grandparent of HEAD
+git checkout <branch>^      first parent of branch
+git checkout HEAD~4         moved back 4 places
+git branch -f main HEAD~3   moved (by force) main branch to three parents behind HEAD
