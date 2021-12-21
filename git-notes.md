@@ -1,4 +1,5 @@
 # GIT Notes
+** branch early, and branch often**
 
 ## Cheat Sheet
 git init
@@ -90,6 +91,7 @@ Should use protected master/main branch
 git branch <branch>             Create a new branch
 git checkout <branch>           Switch to another branch
 git checkout -b <branch>        Create and checkout a branch
+git switch
 git branch -d <branch>
 git status
 
