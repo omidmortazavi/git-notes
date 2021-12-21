@@ -90,8 +90,8 @@ git show <tag>                  Show Tag details
 Should use protected master/main branch
 git branch <branch>             Create a new branch
 git checkout <branch>           Switch to another branch
+git switch <branch>
 git checkout -b <branch>        Create and checkout a branch
-git switch
 git branch -d <branch>
 git status
 
