@@ -27,6 +27,7 @@
 `git push`  
 
 ### Undoing Change
+
 `git reset`  
 `git checkout <file>`  
 `git reset --hard <branch>`  
@@ -85,8 +86,8 @@ Another way of holding a pointer to a commit, typically used to 'tag' releases w
 - **staged** - there are current changes that will be committed. Due to the way git   works, files can have a dual status of modified and staged, when changes have been made after a stage.
 
 ### HEAD
-
-Pointer to the most recent commit in the current branch being worked on (in most cases)  
+HEAD is Git’s way of referring to the current snapshot  
+In most cases, the pointer to the most recent commit in the current branch  
 `cat .git/HEAD && cat .git/refs/heads/master`  
 `git log --oneline`  
 
@@ -164,6 +165,7 @@ Empty folders are ignored by default, use a .keep file:
 `git diff <hash> <hash>`  
 
 ### reset
+
 `git reset` move branch ref backwards to previous commit  
 `git checkout <file>` undo all changes to the file, reverting it to the last committed state  
 `git reset --hard <branch>` reset everything back to the latest commit on a branch  
@@ -196,12 +198,34 @@ Mark a specific commit in your project, a Tag can be annnotated or lightweight
 ### branch
 
 `git branch <branch>` create a new branch  
+`git branch -d <branch>` delete branch
+`git switch <branch>` switch branches (replaces branch checkout)
+
+`git branch -f main HEAD~3` moved (by force) main branch to three parents behind HEAD
+
+### checkout
+
+In Git terms, a "checkout" is the act of switching between different versions of a target entity. The git checkout command operates upon three distinct entities: files, commits, and branches.  
+
+#### branches
+
 `git checkout <branch>` switch to another branch  
-`git switch <branch>`  
 `git checkout -b <branch>` create and checkout a branch  
-`git branch -d <branch>`  
+
+#### files
+
+Checking out a file is similar to using git reset with a file path, except it updates the working directory instead of the stage. Unlike the commit-level version of this command, this does not move the HEAD reference, which means that you won’t switch branches  
+`git checkout <file>`  
+
+#### commits
+
+`git checkout HEAD^` first parent of HEAD  
+`git checkout HEAD^^` grandparent of HEAD  
+`git checkout <branch>^` first parent of branch  
+`git checkout HEAD~4` moved back 4 places  
 
 ### merge
+
 Combine diffrences of branches then creating a new commit pointer  
 *Invoke merge from destination branch (i.e branch you want to merge into)*  
 `git merge <branch>`  
@@ -213,6 +237,7 @@ vi <file>
 git add <file>
 git commit -m "<message>"
 ```
+
 `git branch -d <branch>` delete branch after a merge
 
 ### rebase
@@ -222,45 +247,49 @@ Replay changes made to one branch over the top of another
 `git rebase <branch>`  
 `git rebase -i` interactive, allows you to squash, re-order and ommit commits
 
-### Cloning
+### clone
 
-Local - Useful for testing commit reverts
-git clone <local repo> <new repo>
+Clone a local project  
+*Useful for testing commit reverts*  
+`git clone <local repo> <new repo>`
 
-Remote Repository
-git clone <remote URL>
+Clone a remote repository  
+`git clone <remote URL>`
 
-### Forking
-
+### fork
 Copy of project to be worked on, can then ask for a pull request from original
 
-### Gargbage Collection
+### gc
 
-git gc                  Cleans old objects that cannot be ref by db
-git gc --prune          GC older than 2 weeks
-git gc --auto           Highlights if gc is required
+Garbage Collection  
+`git gc` cleans old objects that cannot be ref by db  
+`git gc --prune` gc older than 2 weeks  
+`git gc --auto` highlights if gc is required  
 
 ## Remote Operations
 
-Remote branches viewed locally have a required naming convention.
-'origin' is usually the alia used for the remote repo.
+### remote
+
+Remote branches viewed locally have a required naming convention.  
+
+```bash
+# *origin* is usually the name(alias) used for the remote repo.  
 <remote name>/<branch name>
+origin/<branch name>
+```
 
-git remote              shows the alias used for the remote repo (origin)
-git remote -v           shows the actual remote servers tracked by current repo and the alias
-git remote show origin  remote branches being tracked
-git fetch origin        pulls down remote commits to local copy of remote, does not commit anything
-git pull                pulls down commits and attempts to automatically merge
+`git remote add <name> <url>`  
+`git remote` shows the name (alias) for the remote repo  
+`git remote -v` shows the actual remote servers tracked by current repo and the alias  
+`git remote show origin` remote branches being tracked  
 
-### Divergence
+### fetch
 
-When the remote has moved ahead of your local work. You need to base from the most recent version of the remote. Easiest way to do this is a rebase.
-git fetch; git rebase origin/main; git push
-git fetch; git merge origin/main; git push
-git pull --rebase; git push
-git pull; git push
+`git fetch origin` pulls down remote commits to local copy of remote, does not commit anything to local branch  
+`git pull` pulls down commits and attempts to automatically merge  
 
 ### push
+
 >It is Bad form to push directly to main branch (Protect Yo Master)
 
 `git push -u <remote> <local-branch>`  
@@ -268,39 +297,23 @@ git pull; git push
 
 ### fetch/pull
 
-Create an merge request or pull request from UI
-git fetch origin        pulls down remote commits to local copy of remote, does not commit anything
-git merge origin
-
-git branch -a
-
-git pull                pulls down commits and attempts to automatically merge
-
-## References
-
-git checkout HEAD^          first parent of HEAD
-git checkout HEAD^^         grandparent of HEAD
-git checkout <branch>^      first parent of branch
-git checkout HEAD~4         moved back 4 places
-git branch -f main HEAD~3   moved (by force) main branch to three parents behind HEAD
+Create an merge request or pull request (typicaly from UI)  
+`git fetch origin`  pulls down remote commits to local copy of remote, does not commit anything  
+`git merge origin`  
+`git pull` pulls down commits and attempts to automatically merge
 
 ---
+## Divergence
 
-## Alias
+When the remote has moved ahead of your local work. You need to base from the most recent version of the remote. Easiest way to do this is a rebase, here are some methods:  
+`git fetch; git rebase origin/main; git push`  
+`git fetch; git merge origin/main; git push`  
+`git pull --rebase; git push`  
+`git pull; git push`  
 
-Put in gitconfig:
-alias gtree='git log --graph --abbrev-commit --decorate --date=relative --format=format:'\''%C(bold blue)%h%C(reset) - %C(bold green)(%ar)%C(reset) %C(white)%s%C(reset) %C(dim white)- %an%C(reset)%C(bold yellow)%d%C(reset)'\'' --all'
-
-lg = !"git lg1"
-lg1 = !"git lg1-specific --all"
-lg2 = !"git lg2-specific --all"
-lg3 = !"git lg3-specific --all"
-
-lg1-specific = log --graph --abbrev-commit --decorate --format=format:'%C(bold blue)%h%C(reset) - %C(bold green)(%ar)%C(reset) %C(white)%s%C(reset) %C(dim white)- %an%C(reset)%C(auto)%d%C(reset)
-lg2-specific = log --graph --abbrev-commit --decorate --format=format:'%C(bold blue)%h%C(reset) - %C(bold cyan)%aD%C(reset) %C(bold green)(%ar)%C(reset)%C(auto)%d%C(reset)%n''%C(white)%s%C(reset) %C(dim white)- %an%C(reset)'
-lg3-specific = log --graph --abbrev-commit --decorate --format=format:'%C(bold blue)%h%C(reset) - %C(bold cyan)%aD%C(reset) %C(bold green)(%ar)%C(reset) %C(bold cyan)(committed: %cD)%C(reset) %C(auto)%d%C(reset)%n''          %C(white)%s%C(reset)%n''          %C(dim white)- %an <%ae> %C(reset) %C(dim white)(committer: %cn <%ce>)%C(reset)'
 ---
 
 ## Useful Resources
-
 <https://git-school.github.io/visualizing-git/>
+<https://learngitbranching.js.org>
+<https://www.atlassian.com/git/tutorials>
