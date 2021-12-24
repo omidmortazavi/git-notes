@@ -314,6 +314,6 @@ When the remote has moved ahead of your local work. You need to base from the mo
 ---
 
 ## Useful Resources
-<https://git-school.github.io/visualizing-git/>
-<https://learngitbranching.js.org>
-<https://www.atlassian.com/git/tutorials>
+<https://git-school.github.io/visualizing-git/>  
+<https://learngitbranching.js.org>  
+<https://www.atlassian.com/git/tutorials>  
