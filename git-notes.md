@@ -1,160 +1,273 @@
 # GIT Notes
-** branch early, and branch often**
 
-## Cheat Sheet
-git init
-git config
-git add <file>
-git status
-git commit -a -m <message>
-git log --oneline
-git tag -a <tag> -m <message>
-git branch <branch>
-git checkout <branch>
-git merge
-git branch -d <branch>
-git revert <hash>
+>branch early, and branch often
 
-## Initialising
-git init
-git init --bare   contains no working directory, useful for shared local projects
+## Quick Reference
 
-## Git Config
-Config can be set locally or globally:
-git config 
-git config --global
+`git init`  
+`git config`  
+`git add <file>`  
+`git commit -m <message>`  
 
-Setting up your identitity, used only for tracking changes to git db, not for auth:
-git config --global user.name "Joe Bloggs"
-git config --global user.email "Joe@Bloggs.com"
+`git branch <branch>`  
+`git checkout <branch>`  
+`git merge <branc>`  
+`git rebase <branch>`  
 
-Can change Additional Settings:
-git config --global core.editor "usr/bin/vi"
+`git cherry-pick <commit>`  
 
-List Config:
-git config --list
-git config user.name
+`git status`  
+`git log --oneline`  
 
-Stored in:
-~/.gitconfig
+`git stash`  
+`git tag -a <tag> -m <message>`  
 
-## Adding
-git add           Adds file to the index file so they can be tracked in stating area
-git status        What files are in the staging areas (not commited yet)
-git rm            Removes a file from the project
-git rm --cached   Removes a file from index file
-git rm -f         Removes from from index file AND DELETS file
+`git clone <remote>`  
+`git fetch <remote>`  
+`git push`  
 
-.keep         Empty folders are ignored by default, use a .keep file
+### Undoing Change
+`git reset`  
+`git checkout <file>`  
+`git reset --hard <branch>`  
+`git reset --hard origin/<branch>`  
+`git revert <hash>`  
 
-## Status
-git status
-git status -s
-  A   : new
-  ??  : untracked
-  M   : modified
-  D   : deleted
-git status -v
+### Feature Branch Workflow
 
-## Committing
-git commit                      commit files in the staging area
-git commit -m "Commit Message"  bypass editor
-git commit -a -m "Message"      commit a modifified file int he staging area
+Rebase work on new commits from remote:  
+`git pull --rebase; git push`  
 
-To view commits:
-cat .git/COMMIT_EDITMSG
-git log
-git log --oneline
+### Undo accidental commit to local main
 
-Reverting:
-git revert HEAD                 Create a NEW commit that will undo previous one
-git revert HEAD~n               Revert commit at index(n) from HEAD (See git log --oneline)
-git revert <hash>        Revert specific commit
+```bash
+git reset --hard origin/main ||
+git reset --hard <commit> ||
+git reset --hard HEAD~n
 
-## Ignoring
-.gitignore
-git status --ignored
+git checkout -b feature <commit>
+git push origin feature
+```
 
-cat .git/info/exclude
+## Concepts
 
-## Tags
-Mark a specific commit in your project
-Annnotate or Lightweight
-git tag -a <tag> -m <message>   Add Tag
-git tag -d <tag>                Delete Tag
+### Working Directory
 
-git tag                         Check all tags
-git show <tag>                  Show Tag details
+Unstaged Files  
 
-## Branches
-Should use protected master/main branch
-git branch <branch>             Create a new branch
-git checkout <branch>           Switch to another branch
-git switch <branch>
-git checkout -b <branch>        Create and checkout a branch
-git branch -d <branch>
-git status
+### Staging Area  
 
-HEAD                            pointer to current branch being worked on
-cat .git/HEAD
-cat .git/refs/heads/master
-git log --oneline
+Allows grouping of changes before commiting to project history  
 
-## Merging
-Invoke merge from destination branch (i.e branch you want to merge into)
-git merge <branch>
-git branch -d <branch>
+### Git History  
 
-git merge --abort
-or
-vi <file>     fix merge conflict
+History of branches and commits  
+
+### Commit
+
+Immutable snapshot of the project (file base)
+
+### Branch
+
+Git stores a branch as a reference to a commit in the git history
+
+### Tags  
+
+Another way of holding a pointer to a commit, typically used to 'tag' releases with a semantic version
+
+### Status  
+
+![Stages](https://i.stack.imgur.com/MRkpH.png)
+
+- **untracked** - git knows the file exists but will perform no actions unless instructed  
+- **unmodified** - git is tracking the file but there are no current changes  
+- **modified** - git is tracking the file, there are current uncommitted changes but changes will not be committed  
+- **staged** - there are current changes that will be committed. Due to the way git   works, files can have a dual status of modified and staged, when changes have been made after a stage.
+
+### HEAD
+
+Pointer to the most recent commit in the current branch being worked on (in most cases)  
+`cat .git/HEAD && cat .git/refs/heads/master`  
+`git log --oneline`  
+
+### detached HEAD
+
+When HEAD does not point to most recent commit i.e checkout older commit
+
+## GIT Operations
+
+### init
+
+`git init`  
+`git init --bare` Init a project with no working directory, useful for shared local projects as you cannot edit files or commit changes.  
+
+### config
+
+Config can be set locally or globally:  
+`git config`  
+`git config --global`  
+
+Setting up your identitity, used only for tracking changes to git db, not for auth:  
+`git config --global user.name "Joe Bloggs"`  
+`git config --global user.email "Joe@Bloggs.com"`  
+
+Change Additional Settings:  
+`git config --global core.editor "usr/bin/vi"`  
+
+List Config:  
+`git config --list`  
+`git config user.name`  
+
+Stored in:  
+`~/.gitconfig`  
+
+### add
+
+`git add` Add changes in working dir to the index file so they can be tracked in stating area  
+`git add .` Add everything
+
+Empty folders are ignored by default, use a .keep file:  
+`touch .keep`  
+
+### status
+
+`git status` show files in the staging area yet to be committed  
+`git status -s` short output, *prefered*  
+`git status -v` verbose output
+
+### commit
+
+`git commit` commit files from the staging area to git history  
+`git commit -m "commit message"` bypass editor  
+`git commit -a -m "commit message"` adds and commits all unstaged files, use with caution  
+
+`git config --global core.editor vi|vim|nano` update default editor
+
+### remove
+
+`git rm` removes a file from the working tree AND index
+`git rm --cached` removes a file from index file only  
+`git rm -f` removes from from index file AND DELETS file
+
+### log
+
+`git log`  
+`git log --oneline` sparse output, *prefered*  
+`git log --graphs` graphing  
+`git log -S <keyword>` keyword search  
+
+### diff
+
+`git diff` unstaged changes in working tree  
+`git diff --summary` view summary only  
+`git diff HEAD^ HEAD` diff changes to current head  
+`git diff <hash> <hash>`  
+
+### reset
+`git reset` move branch ref backwards to previous commit  
+`git checkout <file>` undo all changes to the file, reverting it to the last committed state  
+`git reset --hard <branch>` reset everything back to the latest commit on a branch  
+`git reset --hard origin/<branch>` sets your current branch to the state of the remote branch
+
+### revert
+
+`git revert HEAD` create a NEW commit that will undo previous one  
+`git revert HEAD~n` revert commits at index(n) from HEAD  
+`git revert <hash>` revert specific commit  
+
+### cherry-pick
+
+`git cherry-pick <commit1 .. n>` choose 1 or more commits to add to your HEAD *love this*
+
+### ignore
+
+`cat .gitignore`  
+`git status --ignored`
+
+### tags
+
+Mark a specific commit in your project, a Tag can be annnotated or lightweight  
+`git tag -a <tag> -m <message>` Add Tag  
+`git tag -d <tag>` Delete Tag  
+
+`git tag` Check all tags  
+`git show <tag>` Show Tag details  
+
+### branch
+
+`git branch <branch>` create a new branch  
+`git checkout <branch>` switch to another branch  
+`git switch <branch>`  
+`git checkout -b <branch>` create and checkout a branch  
+`git branch -d <branch>`  
+
+### merge
+Combine diffrences of branches then creating a new commit pointer  
+*Invoke merge from destination branch (i.e branch you want to merge into)*  
+`git merge <branch>`  
+`git merge --abort` abort a merge
+
+```bash
+# fix merge conflict
+vi <file>
 git add <file>
 git commit -m "<message>"
+```
+`git branch -d <branch>` delete branch after a merge
 
-## Rebasing
-Merge - combine diffrences of branches then creating a new commit pointer
-Rebase - replay changes made to one branch over the top of another
-Merge shows accurate history of project, rebase provides a falsified history which is cleaner
-git rebase <branch>
+### rebase
 
-## Diffing
-git diff                Unstaged changes in working tree
-git diff --summary      View summary only
-git diff HEAD^ HEAD     Diff changes to current head
-git diff <hash> <hash>
+Replay changes made to one branch over the top of another  
+*Merge shows accurate history of project, rebase provides a falsified history which is cleaner*  
+`git rebase <branch>`  
+`git rebase -i` interactive, allows you to squash, re-order and ommit commits
 
-## Gargbage Collection
-git gc                  Cleans old objects that cannot be ref by db
-git gc --prune          GC older than 2 weeks
-git gc --auto           Highlights if gc is required
+### Cloning
 
-## Logs
-git log --oneline       Sparse output
-git log --graphs        Graphing
-git log -S <keyword>    Keyword Search
-
-## Cloning
 Local - Useful for testing commit reverts
 git clone <local repo> <new repo>
 
 Remote Repository
 git clone <remote URL>
 
-## Forking
+### Forking
+
 Copy of project to be worked on, can then ask for a pull request from original
 
-## Remote Repositories
+### Gargbage Collection
+
+git gc                  Cleans old objects that cannot be ref by db
+git gc --prune          GC older than 2 weeks
+git gc --auto           Highlights if gc is required
+
+## Remote Operations
+
+Remote branches viewed locally have a required naming convention.
+'origin' is usually the alia used for the remote repo.
+<remote name>/<branch name>
+
 git remote              shows the alias used for the remote repo (origin)
 git remote -v           shows the actual remote servers tracked by current repo and the alias
 git remote show origin  remote branches being tracked
 git fetch origin        pulls down remote commits to local copy of remote, does not commit anything
 git pull                pulls down commits and attempts to automatically merge
 
-## Pushing
-Bad form to push directly to main branch:
-git push -u <remote> <local-branch>
+### Divergence
 
-## Pulling
+When the remote has moved ahead of your local work. You need to base from the most recent version of the remote. Easiest way to do this is a rebase.
+git fetch; git rebase origin/main; git push
+git fetch; git merge origin/main; git push
+git pull --rebase; git push
+git pull; git push
+
+### push
+>It is Bad form to push directly to main branch (Protect Yo Master)
+
+`git push -u <remote> <local-branch>`  
+`git push --set-upstream origin <branch_name>` Required on first push if branch does not exist on remote
+
+### fetch/pull
+
 Create an merge request or pull request from UI
 git fetch origin        pulls down remote commits to local copy of remote, does not commit anything
 git merge origin
@@ -163,9 +276,31 @@ git branch -a
 
 git pull                pulls down commits and attempts to automatically merge
 
-## Referneces
+## References
+
 git checkout HEAD^          first parent of HEAD
 git checkout HEAD^^         grandparent of HEAD
 git checkout <branch>^      first parent of branch
 git checkout HEAD~4         moved back 4 places
 git branch -f main HEAD~3   moved (by force) main branch to three parents behind HEAD
+
+---
+
+## Alias
+
+Put in gitconfig:
+alias gtree='git log --graph --abbrev-commit --decorate --date=relative --format=format:'\''%C(bold blue)%h%C(reset) - %C(bold green)(%ar)%C(reset) %C(white)%s%C(reset) %C(dim white)- %an%C(reset)%C(bold yellow)%d%C(reset)'\'' --all'
+
+lg = !"git lg1"
+lg1 = !"git lg1-specific --all"
+lg2 = !"git lg2-specific --all"
+lg3 = !"git lg3-specific --all"
+
+lg1-specific = log --graph --abbrev-commit --decorate --format=format:'%C(bold blue)%h%C(reset) - %C(bold green)(%ar)%C(reset) %C(white)%s%C(reset) %C(dim white)- %an%C(reset)%C(auto)%d%C(reset)
+lg2-specific = log --graph --abbrev-commit --decorate --format=format:'%C(bold blue)%h%C(reset) - %C(bold cyan)%aD%C(reset) %C(bold green)(%ar)%C(reset)%C(auto)%d%C(reset)%n''%C(white)%s%C(reset) %C(dim white)- %an%C(reset)'
+lg3-specific = log --graph --abbrev-commit --decorate --format=format:'%C(bold blue)%h%C(reset) - %C(bold cyan)%aD%C(reset) %C(bold green)(%ar)%C(reset) %C(bold cyan)(committed: %cD)%C(reset) %C(auto)%d%C(reset)%n''          %C(white)%s%C(reset)%n''          %C(dim white)- %an <%ae> %C(reset) %C(dim white)(committer: %cn <%ce>)%C(reset)'
+---
+
+## Useful Resources
+
+<https://git-school.github.io/visualizing-git/>
